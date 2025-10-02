@@ -1,13 +1,12 @@
 def desciption(predictions):
     for obj in predictions:
         print(obj.summary())
-#          подробный формат вывода
-#         print(obj.verbose())
+        #          подробный формат вывода
+        #         print(obj.verbose())
         print("- - - - - -")
 
 
-
-#Получение центра ограничивающей рамки
+# Получение центра ограничивающей рамки
 def bb_center_xy(predictions):
     yc = 0
     xc = 0
@@ -24,12 +23,11 @@ def bb_center_xy(predictions):
             xc = (x1 + x2) // 2
             yc = (y1 + y2) // 2
 
-        #print("For x1= ",x1 , " x2= ",x2 , " and y1= ",y1 , " y2= ",y2 , " . Center is xc= ",xc , " yc=",yc)
+        # print("For x1= ",x1 , " x2= ",x2 , " and y1= ",y1 , " y2= ",y2 , " . Center is xc= ",xc , " yc=",yc)
         return xc, yc
 
 
-
-#Получение координат ограничивающей рамки
+# Получение координат ограничивающей рамки
 def get_id_coords(preds):
     x1 = 0
     y1 = 0
@@ -45,11 +43,11 @@ def get_id_coords(preds):
             x2 = round(bb_tensor.tolist()[0][2])
             y2 = round(bb_tensor.tolist()[0][3])
 
-    #print("For x1= ",x1 , " x2= ",x2 , " and y1= ",y1 , " y2= ",y2)
+    # print("For x1= ",x1 , " x2= ",x2 , " and y1= ",y1 , " y2= ",y2)
     return x1, y1, x2, y2
 
 
-#Получение трек айди объекта
+# Получение трек айди объекта
 def get_obj_trackId(preds):
     for obj in preds:
         return obj.summary()[0].get('track_id')
