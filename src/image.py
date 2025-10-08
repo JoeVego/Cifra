@@ -25,7 +25,7 @@ def img_save(car_img, x1, y1, x2, y2, counter_img, track_id):
     crop_img = car_img[y1:y2, x1:x2+10]
     # cv2.imshow("YOLO Inference", crop_img)
 
-    filename = ("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\preds\\"
+    filename = ("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\yolo_license_plate_3"
                 + str(track_id) + "_obj_" + str(counter_img) + ".png")
 
     cv2.imwrite(filename, crop_img)
