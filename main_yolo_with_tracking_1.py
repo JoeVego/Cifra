@@ -3,7 +3,7 @@ import cv2
 from src import image
 from src.model import get_yolo_track
 # from image import line_dot1, line_dot2, line_color, line_thickness
-from src.image import zone_limit_x, zone_limit_y, img_save
+from src.image import zone_limit_x, zone_limit_y, img_save_bb
 from src.prediction import bb_center_xy, desciption, get_obj_trackId
 from src.deteceted_object import deteceted_object
 
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     model = get_yolo_track()
 
     # Open the video file
-    source = "C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\in\\service_zone_out.mp4"
+    source = "C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\CameraData\\service_zone_out.mp4"
     cap = cv2.VideoCapture(source)
 
     # новый объект лучшего объекта для данного трек_ид
@@ -125,8 +125,8 @@ if __name__ == '__main__':
 
                         # запись объекта на диск
                         x1, y1, x2, y2 = best_obj.get_bb_coors()
-                        img_save_counter = img_save(best_obj.get_frame(), x1, y1, x2, y2,
-                                                    img_save_counter, best_obj.get_track_id())
+                        img_save_counter = img_save_bb(best_obj.get_frame(), x1, y1, x2, y2,
+                                                       img_save_counter, best_obj.get_track_id())
                         img_save_counter = img_save_counter + 1
 
                         # а объект с новым трекером сохраняем для дальнейшего сравнения объекта

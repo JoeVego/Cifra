@@ -7,24 +7,38 @@ def desciption(predictions):
 
 
 # Получение центра ограничивающей рамки
-def bb_center_xy(predictions):
+def bb_center_xy(result):
     yc = 0
     xc = 0
 
-    for obj_list in predictions:
-        for obj in obj_list:
-            bb_tensor = obj.boxes.xyxy
+    bb_tensor = result.boxes.xyxy
 
-            x1 = round(bb_tensor.tolist()[0][0])
-            y1 = round(bb_tensor.tolist()[0][1])
-            x2 = round(bb_tensor.tolist()[0][2])
-            y2 = round(bb_tensor.tolist()[0][3])
+    x1 = round(bb_tensor.tolist()[0][0])
+    y1 = round(bb_tensor.tolist()[0][1])
+    x2 = round(bb_tensor.tolist()[0][2])
+    y2 = round(bb_tensor.tolist()[0][3])
 
-            xc = (x1 + x2) // 2
-            yc = (y1 + y2) // 2
+    xc = (x1 + x2) // 2
+    yc = (y1 + y2) // 2
 
-        # print("For x1= ",x1 , " x2= ",x2 , " and y1= ",y1 , " y2= ",y2 , " . Center is xc= ",xc , " yc=",yc)
-        return xc, yc
+    # print("For x1= ",x1 , " x2= ",x2 , " and y1= ",y1 , " y2= ",y2 , " . Center is xc= ",xc , " yc=",yc)
+    return xc, yc
+
+
+def bb_center_by_res(result):
+    for obj in result:
+        bb_tensor = obj.boxes.xyxy
+
+        x1 = round(bb_tensor.tolist()[0][0])
+        y1 = round(bb_tensor.tolist()[0][1])
+        x2 = round(bb_tensor.tolist()[0][2])
+        y2 = round(bb_tensor.tolist()[0][3])
+
+        xc = (x1 + x2) // 2
+        yc = (y1 + y2) // 2
+
+    # print("For x1= ",x1 , " x2= ",x2 , " and y1= ",y1 , " y2= ",y2 , " . Center is xc= ",xc , " yc=",yc)
+    return xc, yc
 
 
 # Получение координат ограничивающей рамки
@@ -48,6 +62,6 @@ def get_id_coords(preds):
 
 
 # Получение трек айди объекта
-def get_obj_trackId(preds):
-    for obj in preds:
-        return obj.summary()[0].get('track_id')
+def get_obj_trackId(results):
+    # for obj in preds:
+    return results.summary()[0].get('track_id')

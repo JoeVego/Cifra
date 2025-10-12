@@ -21,14 +21,23 @@ thickness = 2
 lineType = 2
 
 
-def img_save(car_img, x1, y1, x2, y2, counter_img, track_id):
-    crop_img = car_img[y1:y2, x1:x2+10]
+def img_save_bb(car_img, x1, y1, x2, y2, counter_img, track_id):
+    crop_img = car_img[y1:y2, x1:x2]
     # cv2.imshow("YOLO Inference", crop_img)
 
-    filename = ("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\yolo_license_plate_3"
+    filename = ("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\yolo_lp_4\\"
                 + str(track_id) + "_obj_" + str(counter_img) + ".png")
 
     cv2.imwrite(filename, crop_img)
+
+    return counter_img
+
+def img_save(car_img, counter_img, track_id):
+
+    filename = ("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\"
+                + str(track_id) + "_obj_" + str(counter_img) + ".png")
+
+    cv2.imwrite(filename, car_img)
 
     return counter_img
 
@@ -38,13 +47,10 @@ def print_line(frame):
     # return frame
     return cv2.line(frame, line_dot1, line_dot2, line_color, line_thickness)
 
-def print_line_in(frame):
-    line_dot_in_1 = (500, 0)
-    line_dot_in_2 = (500, 75)
-    line_dot_in_3 = (500, 75)
-    line_dot_in_4 = (800, 75)
+def print_line_cam1(frame):
+    line_dot_in_1 = (0, 120)
+    line_dot_in_2 = (1900, 120)
     line_color = (255, 0, 255)
-    line_thickness = 5
+    line_thickness = 2
 
-    frame = cv2.line(frame, line_dot_in_3, line_dot_in_4, line_color, line_thickness)
     return cv2.line(frame, line_dot_in_1, line_dot_in_2, line_color, line_thickness)

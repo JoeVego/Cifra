@@ -1,7 +1,7 @@
 import cv2
 
 from src.model import get_yolo_track
-from src.image import img_save, zone_limit_in_y, zone_limit_in_x
+from src.image import img_save_bb, print_line_cam1
 from src.prediction import bb_center_xy, desciption, get_obj_trackId
 from src.deteceted_object import deteceted_object
 
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     model = get_yolo_track()
 
     # Open the video file
-    source = "C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\in\\service_zone_in_2.mp4"
+    source = "C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\CameraData\\service_zone_in_2.mp4"
     cap = cv2.VideoCapture(source)
 
     # новый объект лучшего объекта для данного трек_ид
@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     # пропуск кадров
     while cap.isOpened():
-        if frame_counter % PROCESS_EVERY_N_FRAME != 3:
+        if frame_counter % PROCESS_EVERY_N_FRAME != 0:
             cap.grab()
             frame_counter += 1
             continue
@@ -56,8 +56,9 @@ if __name__ == '__main__':
                 # Visualize the results on the frame
                 annotated_frame = result.plot()
                 # рисую линию на прогонзе по которой отслеживаю, что центр объекта подъехал к шлагбауму
-                height, width, channels = annotated_frame.shape
-                print(height, width)
+                # height, width, channels = annotated_frame.shape
+                # print(height, width)
+                cv2.imshow("YOLO Inference", image.print_line(annotated_frame))
 
                 cv2.imshow("YOLO Inference", annotated_frame)
                 # получаем центр предсказания
@@ -97,12 +98,11 @@ if __name__ == '__main__':
                         result.save_crop("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\preds\\",
                                          "_" + str(track_id) + "_obj_" + str(img_save_counter) + ".png")
                         x1, y1, x2, y2 = best_obj.get_bb_coors()
-                        img_save_counter = img_save(best_obj.get_frame(), x1, y1, x2, y2,
-                                                    img_save_counter, best_obj.get_track_id())
+                        img_save_counter = img_save_bb(best_obj.get_frame(), x1, y1, x2, y2,
+                                                       img_save_counter, best_obj.get_track_id())
                         img_save_counter = img_save_counter + 1
 
                         for obj in result:
-
                             if obj.summary()[0].get('confidence') > best_obj.get_conf():
                                 best_obj = deteceted_object(obj, track_id,
                                                             obj.summary()[0].get('confidence'), annotated_frame)
@@ -112,8 +112,8 @@ if __name__ == '__main__':
 
                         # запись объекта на диск
                         x1, y1, x2, y2 = best_obj.get_bb_coors()
-                        img_save_counter = img_save(best_obj.get_frame(), x1, y1, x2, y2,
-                                                    img_save_counter, best_obj.get_track_id())
+                        img_save_counter = img_save_bb(best_obj.get_frame(), x1, y1, x2, y2,
+                                                       img_save_counter, best_obj.get_track_id())
                         img_save_counter = img_save_counter + 1
 
                         # а объект с новым трекером сохраняем для дальнейшего сравнения объекта
@@ -126,7 +126,7 @@ if __name__ == '__main__':
                                                             obj.summary()[0].get('confidence'), annotated_frame)
 
                         track_id_old = track_id
-                        # Можно после распознавания номеров доабвить првоерку на распознанные - чтобы не совпадали
+                        # Можно после распознавания номеров добабвить првоерку на распознанные - чтобы не совпадали
 
                     desciption(preds)
 
@@ -136,8 +136,8 @@ if __name__ == '__main__':
         else:
             if track_id_old != None:
                 x1, y1, x2, y2 = best_obj.get_bb_coors()
-                img_save_counter = img_save(best_obj.get_frame(), x1, y1, x2, y2,
-                                            img_save_counter, best_obj.get_track_id())
+                img_save_counter = img_save_bb(best_obj.get_frame(), x1, y1, x2, y2,
+                                               img_save_counter, best_obj.get_track_id())
                 img_save_counter = img_save_counter + 1
             # Break the loop if the end of the video is reached
             break
