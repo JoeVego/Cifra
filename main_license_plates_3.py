@@ -42,7 +42,6 @@ if __name__ == '__main__':
 
         if success:
             # Run YOLO inference on the frame
-            # preds = model.predict(source = frame, conf = 0.6, max_det = 5, classes = cls_names, verbose = True)
             preds = model.track(source=frame,
                                 conf=0.3,
                                 max_det=3,
