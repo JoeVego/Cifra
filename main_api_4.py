@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Optional
 import uvicorn
 from src.model_list import model_list
-from arch2.yolo_class import YoloClass
+from LPR_class import LPR_class
 
 app = FastAPI()
 
@@ -29,15 +29,15 @@ def start_detection(request: StartDetectionRequest):
     if source == "0":
         source = int(source)
 
-    function_name = request.function_name
-    if model_list.get(function_name) not in model_list:
-        return "non-existant model, try another name"
+    # function_name = request.function_name
+    # if model_list.get(function_name) not in model_list:
+    #     return "non-existant model, try another name"
 
-    detection = YoloClass(
+    detection = LPR_class(
         source=source,
         camera_id=request.camera_id,
         function_name=request.function_name,
-        skip_frames=request.skip_frames
+        skip_frames=request.skip_frames,
     )
     detection_dict[request.camera_id] = detection
 

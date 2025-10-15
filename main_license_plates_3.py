@@ -81,7 +81,7 @@ if __name__ == '__main__':
                         # оставляя прогноз, у которого больше уверенность
                         elif track_id_old == track_id:
 
-                            if  result.summary()[0].get('confidence') > best_obj.get_conf():
+                            if result.summary()[0].get('confidence') > best_obj.get_conf():
                                 best_obj = deteceted_object(result, track_id,
                                                             result.summary()[0].get('confidence'), annotated_frame)
 

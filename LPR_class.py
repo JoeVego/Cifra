@@ -2,6 +2,7 @@ import cv2
 from ultralytics import YOLO
 from src.model_list import model_list
 from src.deteceted_object import deteceted_object
+from src.prediction import bb_center_xy
 
 
 class LPR_class:
@@ -16,68 +17,57 @@ class LPR_class:
         self.function_name = function_name
         self.detection_status = True
         self.track_id_old = None
-        self.best_obj =  deteceted_object(None, None, None, None)
+        self.best_obj = deteceted_object(None, None, None, None)
         self.img_save_counter = 0
         print("init finished")
 
     def detect_lpr(self):
-        preds = self.model(self.frame)
+        preds = self.model.track(self.frame,
+                                 conf = 0.3,
+                                 persist=True)
 
         for results in preds:
             # Visualize the results on the frame
             annotated_frame = results.plot()
-
-            # рисую линию на прогонзе по которой отслеживаю, что центр объекта подъехал к шлагбауму
             cv2.imshow("YOLO Inference", annotated_frame)
 
             for result in results:
-                # получаем трек_ид его
-                track_id = result.summary()[0].get('track_id')
-                # если получаем первый кадр, т.е. такого трек_ид не было еще
-                if self.track_id_old is None:
-                # то присваиваем ему текущий айдишник
-                    self.track_id_old = track_id
-                    # сохраняем из списка резалта первый обнаруженный объект
-                    if self.best_obj.get_track_id() is None:
-                        self.best_obj = deteceted_object(result, track_id,
-                                                         result.summary()[0].get('confidence'), annotated_frame)
-                        # result.save_crop("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\yolo_lp_4\\",
-                        #                  "_" + str(track_id) + "_obj_" + str(img_save_counter) + ".png")
+                x_center, y_center = bb_center_xy(result)
+                print(result.summary()[0].get('track_id'))
 
-                # если у прогнозов одинаковый трек айди, то они сравниваются между собой
-                # оставляя прогноз, у которого больше уверенность
-                elif self.track_id_old == track_id:
+                if y_center > 120:
+                    # получаем трек_ид его
+                    track_id = result.summary()[0].get('track_id')
 
-                    if result.summary()[0].get('confidence') > self.best_obj.get_conf():
-                        self.best_obj = deteceted_object(result, track_id,
-                                                         result.summary()[0].get('confidence'), annotated_frame)
+                    # если получаем первый кадр, т.е. такого трек_ид не было еще
+                    if self.track_id_old is None:
+                        # то присваиваем ему текущий айдишник
+                        self.track_id_old = track_id
+                        # сохраняем из списка резалта первый обнаруженный объект
+                        if self.best_obj.get_track_id() is None:
+                            self.best_obj = deteceted_object(result, track_id,
+                                                             result.summary()[0].get('confidence'), annotated_frame)
 
-                        # result.save_crop("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\yolo_lp_4\\",
-                        #                  "_" + str(track_id) + "_obj_" + str(img_save_counter) + ".png")
+                    # если у прогнозов одинаковый трек айди, то они сравниваются между собой
+                    # оставляя прогноз, у которого больше уверенность
+                    elif self.track_id_old == track_id:
+                        if result.summary()[0].get('confidence') > self.best_obj.get_conf():
+                            self.best_obj = deteceted_object(result, track_id,
+                                                             result.summary()[0].get('confidence'), annotated_frame)
 
                     # когда перебраны все объекты по трек айди - то сохраняем лучший на диск
-                elif self.track_id_old != track_id:
-                    # запись объекта на диск
-                    result.save_crop("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\",
-                                     "_" + str(track_id) + "_obj_" + str(self.img_save_counter) + ".png")
-                    self.img_save_counter = self.img_save_counter + 1
+                    elif self.track_id_old != track_id:
 
-                    # а объект с новым трекером сохраняем для дальнейшего сравнения объекта
-                    self.best_obj = deteceted_object(result, track_id,
-                                                  result.summary()[0].get('confidence'), annotated_frame)
+                        # запись объекта на диск
+                        result.save_crop("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\api_lp_5\\",
+                                         "_" + str(track_id) + "_obj_" + str(self.img_save_counter)
+                                         + "_conf_" + str(result.summary()[0].get('confidence')) + ".png")
+                        self.img_save_counter = self.img_save_counter + 1
 
-                    self.track_id_old = track_id
-        # results = self.model(
-        #     self.frame,
-        #     classes=self.yolo_classes
-        # )
-        # if results[0].boxes is not None:
-        #     boxes = results[0].boxes.xyxy.cpu()
-        #     names = results[0].names
-        #     clss = results[0].boxes.cls.cpu().tolist()
-        #     annotator = Annotator(self.frame, line_width=2)
-        #     for box, cls in zip(boxes, clss):
-        #         annotator.box_label(box, str(names[cls]), color=colors(cls, True))
+                        # а объект с новым трекером сохраняем для дальнейшего сравнения объекта
+                        self.best_obj = deteceted_object(result, track_id,
+                                                         result.summary()[0].get('confidence'), annotated_frame)
+                        self.track_id_old = track_id
 
     def run(self):
         while self.detection_status == True:
@@ -91,9 +81,8 @@ class LPR_class:
             if success:
                 self.frame = frame
                 self.frame_counter += 1
-                annotated_frame = None
 
-                if self.function_name == 'detect_cars':
+                if self.function_name == 'licence_plate_reg':
                     self.detect_lpr()
 
                 # show frame
