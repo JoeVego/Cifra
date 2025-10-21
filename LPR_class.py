@@ -33,7 +33,7 @@ class LPR_class:
 
             for result in results:
                 x_center, y_center = bb_center_xy(result)
-                print(result.summary()[0].get('track_id'))
+                # print(result.summary()[0].get('track_id'))
 
                 if y_center > 120:
                     # получаем трек_ид его
@@ -84,9 +84,6 @@ class LPR_class:
 
                 if self.function_name == 'licence_plate_reg':
                     self.detect_lpr()
-
-                # show frame
-                # cv2.imshow(f'Camera {self.camera_id}', frame)
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break

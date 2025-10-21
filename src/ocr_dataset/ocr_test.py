@@ -2,7 +2,7 @@ import easyocr
 
 if __name__ == '__main__':
     # reader = easyocr.Reader(['ru']) # this needs to run only once to load the model into memory
-    path = "/data/outs/yolo_lp_4/license-plate/_None_obj_0.jpg"
+    path = "C:/Users/Admin/Desktop/Study/Cifra/data/outs/api_lp_5/license-plate/_None_obj_13_conf_0.34905.jpg"
     # result = reader.readtext(path, allowlist='АВЕКМНОРСТУХ0123456789')
 
     reader = easyocr.Reader(['en']) # this needs to run only once to load the model into memory

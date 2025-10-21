@@ -13,16 +13,16 @@ detection_dict = {}
 
 class StartDetectionRequest(BaseModel):
     source: str
-    camera_id: str
+    camera_id: Optional[int] = 0
     function_name: str
-    skip_frames: Optional[int] = 1  # default to 1 if not provided
+    skip_frames: Optional[int] = 2  # default to 1 if not provided
 
 
 class StopDetectionRequest(BaseModel):
     camera_id: str
 
 
-@app.post("/start_detection")
+@app.post("/start-detection")
 def start_detection(request: StartDetectionRequest):
     print("start_detection")
     source = request.source
@@ -35,9 +35,11 @@ def start_detection(request: StartDetectionRequest):
 
     detection = LPR_class(
         source=source,
-        camera_id=request.camera_id,
+        # camera_id=request.camera_id,
+        camera_id = 0,
         function_name=request.function_name,
-        skip_frames=request.skip_frames,
+        # skip_frames=request.skip_frames,
+        skip_frames = 2
     )
     detection_dict[request.camera_id] = detection
 
@@ -62,4 +64,4 @@ def stop_detection(request: StopDetectionRequest):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run(app, host="0.0.0.0", port=5000, reload=False)

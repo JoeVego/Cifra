@@ -1,0 +1,91 @@
+<template>
+  <div class="result-list">
+    <a-table :data-source="results" :columns="columns" row-key="id" @change="onChange">
+      <template #image="{ record }">
+        <a-image
+          :width="100"
+          :src="record.imageUrl"
+        />
+      </template>
+      <template #date="{ record }">
+        {{ formatDate(record.date) }}
+      </template>
+      <template #source="{ record }">
+        <div>{{ record.source }}</div>
+      </template>
+      <template #description="{ record }">
+        {{ record.description }}
+      </template>
+    </a-table>
+  </div>
+</template>
+
+<script setup>
+import { computed, onMounted, ref } from 'vue';
+import axios from 'axios';
+
+const results = ref([]);
+
+const columns = computed(() => [
+  {
+    title: 'Изображение',
+    dataIndex: 'imageUrl',
+    slots: { customRender: 'image' },
+  },
+  {
+    title: 'Дата',
+    dataIndex: 'date',
+    slots: { customRender: 'date' },
+  },
+  {
+    title: 'Источник',
+    dataIndex: 'sourceUrl',
+    slots: { customRender: 'source' },
+  },
+  {
+    title: 'Описание',
+    dataIndex: 'description',
+    slots: { customRender: 'description' },
+  },
+]);
+
+function formatDate(date) {
+  return new Intl.DateTimeFormat('ru-RU', {
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(date));
+}
+
+function onChange(pagination, filters, sorter) {
+  //scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const getResults = async () => {
+  try {
+    const response = await axios.get('http://localhost:5000/get-results');
+    results.value = response.data.map(item => ({
+      id: item.Id,
+      imageUrl: 'http://localhost:5000/' + item.Link,
+      date: item.Date,
+      sourceUrl: '-',
+      description: '-'
+    }));
+  } catch (error) {
+    console.error('Error fetching results:', error);
+  }
+};
+
+onMounted(() => {
+  getResults();
+});
+</script>
+
+<style scoped>
+.result-list {
+  margin: 20px auto;
+}
+</style>
