@@ -1,10 +1,9 @@
 <template>
   <div class="form-container">
     <!-- Свитчер для выбора режима Фото или Видео/Камера -->
-    <a-radio-group v-model:value="mode" button-style="solid" style="margin-bottom: 42px; width: 100%;">
-      <a-radio-button value="video">Видео/Камера</a-radio-button>
-      <a-radio-button value="photo">Фото</a-radio-button>
-    </a-radio-group>
+    <!--<a-radio-group v-model:value="mode" button-style="solid" style="margin-bottom: 0px; width: 0%;">
+       <a-radio-button value="video">Видео</a-radio-button>
+    </a-radio-group>-->
 
     <!-- Форма для загрузки изображения и Function Name -->
     <a-form v-if="mode === 'photo'" :model="photoFormState" name="photoForm" layout="vertical">
@@ -16,83 +15,35 @@
           </div>
         </a-upload>
       </a-form-item>
-      
-      <a-form-item label="Function Name" name="functionName">
-        <a-input v-model:value="photoFormState.functionName" />
-      </a-form-item>
-
-      <a-form-item>
-        <a-button type="primary" @click="submitPhotoForm">Отправить</a-button>
-      </a-form-item>
     </a-form>
 
     <!-- Форма для ввода RTSP Link и Function Name -->
     <a-form v-else-if="mode === 'video'" :model="videoFormState" name="videoForm" layout="vertical">
-      <a-form-item label="Source (rtsp ссылка или путь к видео или '0', если используется веб-камера)" name="source">
+      <a-form-item label="Источник (rtsp ссылка или путь к видео)" name="source">
         <a-input v-model:value="videoFormState.source" />
       </a-form-item>
 
-      <a-form-item label="Function Name" name="functionName">
+      <!--<a-form-item label="Режим распознавания" name="functionName">
         <a-input v-model:value="videoFormState.functionName" />
-      </a-form-item>
+      </a-form-item>-->
 
+      <a-form-item  style="margin-bottom: 16px;">
+        <select v-model="videoFormState.functionName" style="width: 100%; padding: 4px;
+        background-color: #fff; border: 1px solid #d9d9d9; border-radius: 4px;">
+            <option value="">-- Выберите камеру --</option>
+            <option value="camera_in">зона въезда</option>
+            <option value="camera_out">зона выезда</option>
+        </select>
+      </a-form-item>
 
       <a-form-item>
-        <a-button type="primary" @click="submitVideoForm">Отправить</a-button>
+       <div style="display: flex; gap: 8px; margin: 0;">
+            <a-button type="primary" @click="submitVideoForm">Начать запись</a-button>
+            <a-button type="primary" @click="stopVideoForm">Остановить запись</a-button>
+        </div>
       </a-form-item>
     </a-form>
-        <!-- Похоже на области -->
-    <a-form v-else-if="mode === 'video2'" :model="videoFormState" name="videoForm" layout="vertical">
-      <div style="display: flex; gap: 42px; margin-bottom: 42px;">
-        <div>
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-            <a-button
-              v-if="activeCoordinates.length"
-              type="primary"
-              size="small"
-              @click="undo"
-              :icon="h(UndoOutlined)"
-            />
-            <a-button type="primary" size="small" @click="add">Добавить регион</a-button>
-          </div>
-          <div style="position: relative; width: fit-content; height: fit-content">
-            <div
-              v-for="coordinate in activeCoordinates"
-              :key="`${coordinate?.x}-${coordinate?.y}`"
-              class="image-annotation__marker"
-              :style="{
-                top: `${coordinate?.y - 3}px`,
-                left: `${coordinate?.x - 3}px`,
-                backgroundColor:
-                  regionColor?.hex || `rgb(${regionColor?.r}, ${regionColor?.g}, ${regionColor?.b})`,
-              }"
-            ></div>
-            <div
-              v-if="activeCoordinates.length >= 3"
-              class="polygon"
-              :style="{
-                clipPath: `polygon(${polygonCoordinates()})`,
-                backgroundColor:
-                  regionColor?.hex || `rgb(${regionColor?.r}, ${regionColor?.g}, ${regionColor?.b})`,
-                opacity: 0.5,
-              }"
-            ></div>
-            <img ref="image" :src="`data:image/png;base64,${imageBase64}`" class="stream-image" @click="onClickImage" />
-          </div>
-        </div>
-        <div>
-          <h3>Список регионов:</h3>
-          <div
-            v-for="(region, i) in regions"
-            :key="region.coordinates[0]"
-            style="display: flex; align-items: center; gap: 10px; margin: 6px 0;"
-          >
-            <span> {{ i + 1 }} </span>
-            <a-button size="small" danger @click="deleteRegion(i)">Удалить</a-button>
-          </div>
-        </div>
-      </div>
-    </a-form>
+
 
     <a-result
       v-else
@@ -163,24 +114,6 @@ function uploadAction(event) {
 }
 
 // Обработчики отправки форм
-const submitPhotoForm = async () => {
-  const file = photoFormState.imageFileList[0].originFileObj;
-  console.log('Image File:', file);
-  console.log('Function Name:', photoFormState.functionName);
-  try {
-    const image_in_base64 = await toBase64(file);
-    await axios.post('http://localhost:5000/start-detection', {
-      image: image_in_base64,
-      function_name: photoFormState.functionName,
-      skip_frames: 5,
-      camera_id: 0
-    });
-    mode.value = 'result';
-  } catch (error) {
-    console.error('Error uploading image:', error);
-  }
-};
-
 const getFrame = async () => {
   console.log('RTSP Link:', videoFormState.rtspLink);
   console.log('Function Name:', videoFormState.functionName);
@@ -200,14 +133,12 @@ const getFrame = async () => {
   }
 };
 const submitVideoForm = async () => {
-  console.log('RTSP Link:', videoFormState.rtspLink);
+  console.log('Source:', videoFormState.rtspLink);
   console.log('Function Name:', videoFormState.functionName);
   try {
     await axios.post('http://localhost:5000/start-detection', {
       source: videoFormState.source,
-      function_name: videoFormState.functionName,
-      skip_frames: 2,
-      camera_id: 0
+      function_name: videoFormState.functionName
     });
     mode.value = 'result';
   } catch (error) {
@@ -215,6 +146,18 @@ const submitVideoForm = async () => {
   }
 };
 
+const stopVideoForm = async () => {
+  console.log('Source:', videoFormState.rtspLink);
+  console.log('Function Name:', videoFormState.functionName);
+  try {
+    await axios.post('http://localhost:5000/stop-detection', {
+      function_name: videoFormState.functionName
+    });
+    mode.value = 'result';
+  } catch (error) {
+    console.error('Error uploading video:', error);
+  }
+};
 function onClickImage(event) {
   activeCoordinates.value = [
     ...activeCoordinates.value,

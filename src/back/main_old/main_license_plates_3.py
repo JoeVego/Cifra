@@ -14,7 +14,7 @@ img_save_counter = 0
 # отслеживание айди объекта
 track_id_old = None
 # weights_path
-weights_path = "../../data/weights/0810_lp_ds_learn_yolo11_best.pt"
+weights_path = "../../../data/weights/0810_lp_ds_learn_yolo11_best.pt"
 # In data video file path
 source = "C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\cam_full_vid\\test.mp4"
 

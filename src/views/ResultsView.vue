@@ -38,17 +38,18 @@ const columns = computed(() => [
     slots: { customRender: 'date' },
   },
   {
-    title: 'Источник',
+    title: 'Номер камеры',
     dataIndex: 'sourceUrl',
     slots: { customRender: 'source' },
   },
   {
-    title: 'Описание',
+    title: 'Госномер ТС',
     dataIndex: 'description',
     slots: { customRender: 'description' },
   },
 ]);
 
+//py - datetime.now
 function formatDate(date) {
   return new Intl.DateTimeFormat('ru-RU', {
     year: 'numeric',
@@ -64,6 +65,7 @@ function onChange(pagination, filters, sorter) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// см onMounted
 const getResults = async () => {
   try {
     const response = await axios.get('http://localhost:5000/get-results');
@@ -79,6 +81,7 @@ const getResults = async () => {
   }
 };
 
+//Вызывается 1 раз при запуске
 onMounted(() => {
   getResults();
 });

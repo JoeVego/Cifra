@@ -1,37 +1,33 @@
-#docker-desktop personal
-#docker compose up -d --build
-#docker exec -it my_container bash - переход в команднуб строку для
-#внтури редиса есть 16 команд Redis CLI
+version: "3.11.5"
 
-
-#иниц редиса в питон проекте
-#pip install redis
-#redis_server = redis.Redis(host, port, и индекс БД)
-
-
-#в йоло класс перменнуб реди_сервер
-# с инцииалищацией с блока выше
-
-# в йоло классе делаем сет методов
-# а в функции генераторе получаем кадр с поомщью гет
-
-#после succes делаем сет
-# камера айди оставили постоянным не обновляем его, перезаписываем
-# кадр храним в редисе в виде байтов - base64
-# через base64.encode кодируем изображение
-
-# в докере начинаем с #redis-cli
-# keys * - ключи - айди камеры выведет
-
-#в браузере объекту имейдж указывает эндпоин и получаем видео
-# video_feed методе изменили чтобы динамический передавался камера айди
-
-#
-#
-#
-#
-
-
-
-version: '3'
 services:
+  postgres:
+    image: postgres:16
+    container_name: postgres16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: app_db
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: my-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
