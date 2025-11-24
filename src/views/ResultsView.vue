@@ -4,7 +4,7 @@
       <template #image="{ record }">
         <a-image
           :width="100"
-          :src="record.imageUrl"
+          :src="record.image"
         />
       </template>
       <template #date="{ record }">
@@ -29,7 +29,7 @@ const results = ref([]);
 const columns = computed(() => [
   {
     title: 'Изображение',
-    dataIndex: 'imageUrl',
+    dataIndex: 'image',
     slots: { customRender: 'image' },
   },
   {
@@ -39,7 +39,7 @@ const columns = computed(() => [
   },
   {
     title: 'Номер камеры',
-    dataIndex: 'sourceUrl',
+    dataIndex: 'source',
     slots: { customRender: 'source' },
   },
   {
@@ -70,11 +70,10 @@ const getResults = async () => {
   try {
     const response = await axios.get('http://localhost:5000/get-results');
     results.value = response.data.map(item => ({
-      id: item.Id,
-      imageUrl: 'http://localhost:5000/' + item.Link,
-      date: item.Date,
-      sourceUrl: '-',
-      description: '-'
+        image: item.image,
+        date: item.date,
+        source: item.source,
+        description: item.description,
     }));
   } catch (error) {
     console.error('Error fetching results:', error);

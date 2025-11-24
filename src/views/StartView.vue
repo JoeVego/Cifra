@@ -31,8 +31,8 @@
         <select v-model="videoFormState.functionName" style="width: 100%; padding: 4px;
         background-color: #fff; border: 1px solid #d9d9d9; border-radius: 4px;">
             <option value="">-- Выберите камеру --</option>
-            <option value="camera_in">зона въезда</option>
-            <option value="camera_out">зона выезда</option>
+            <option value="зона въезда">зона въезда</option>
+            <option value="зона выезда">зона выезда</option>
         </select>
       </a-form-item>
 
@@ -42,6 +42,8 @@
             <a-button type="primary" @click="stopVideoForm">Остановить запись</a-button>
         </div>
       </a-form-item>
+
+
     </a-form>
 
 
@@ -49,7 +51,7 @@
       v-else
       status="success"
       title="Успешно"
-      sub-title="Запущено распознавание гос номеров ТС"
+      sub-title=" "
     >
       <template #extra>
         <a-button key="console" type="primary" @click="() => {

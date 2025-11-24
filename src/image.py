@@ -41,3 +41,13 @@ def print_line_cam1(frame):
     img_temp = cv2.line(frame, line_dot_in_1, line_dot_in_2, line_color, line_thickness)
 
     return cv2.line(img_temp, line_dot_in_3, line_dot_in_4, line_color, line_thickness)
+
+def get_bb_coords_by_result(result):
+    margin = 66
+
+    xyxy = result.boxes.xyxy
+    top_left_x = int(xyxy[0][0].item())
+    top_left_y = int(xyxy[0][1].item())
+    bottom_right_x = int(xyxy[0][2].item())
+    bottom_right_y = int(xyxy[0][3].item())
+    return top_left_x - margin, top_left_y - margin, bottom_right_x + margin, bottom_right_y + margin

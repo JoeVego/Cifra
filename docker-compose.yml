@@ -1,33 +1,13 @@
 version: "3.11.5"
 
 services:
-  postgres:
-    image: postgres:16
-    container_name: postgres16
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: app_db
-      POSTGRES_USER: app
-      POSTGRES_PASSWORD: secret
+  backend:
+    build: .
     ports:
-      - "5432:5432"
+      - "5000:5000"  # проброс порта 5000
+    environment:
+      - PYTHONPATH=/app
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U app -d app_db"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: my-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "8080:80"
-    depends_on:
-      - postgres
-
-volumes:
-  pgdata:
+      - C:/Users/Admin/Desktop/Study/docker_cifra/data/weights:/app/weights
+      - C:/Users/Admin/Desktop/Study/docker_cifra/data/camera_videos/camera_records:/app/video
+      - C:/Users/Admin/Desktop/Study/docker_cifra/src/model:/app/tracker

@@ -10,7 +10,7 @@ const current = ref(['start']);
 const items = ref([
   {
     key: 'start',
-    icon: () => h(MailOutlined),
+    icon: () => h(SettingOutlined),
     label: 'Запуск',
     title: 'Запуск',
   },
@@ -19,6 +19,12 @@ const items = ref([
     icon: () => h(AppstoreOutlined),
     label: 'Результаты',
     title: 'Результаты',
+  },
+  {
+    key: 'report',
+    icon: () => h(MailOutlined),
+    label: 'Отчет',
+    title: 'Отчет',
   },
 ]);
 
@@ -55,7 +61,7 @@ header {
 
 nav {
   width: 100%;
-  font-size: 12px;
+  font-size: 18px;
   text-align: center;
   margin-top: 2rem;
 }
