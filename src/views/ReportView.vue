@@ -11,6 +11,19 @@
         {{ record.counter }}
       </template>
     </a-table>
+
+    <!-- Вторая таблица -->
+    <a-table :data-source="timeReport" :columns="timeColumns" row-key="id" @change="onChange" style="margin-top: 40px;">
+      <template #licPlate="{ record }">
+        {{ record.licPlate }}
+      </template>
+      <template #time="{ record }">
+        {{ record.time }}
+      </template>
+      <template #clint_type="{ record }">
+        {{ record.clint_type }}
+      </template>
+    </a-table>
   </div>
 </template>
 
@@ -19,6 +32,7 @@ import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
 
 const report = ref([]);
+const timeReport = ref([]); // Данные для второй таблицы
 
 const columns = computed(() => [
   {
@@ -37,6 +51,24 @@ const columns = computed(() => [
     slots: { customRender: 'counter' },
   },
 ]);
+
+const timeColumns = [
+  {
+    title: 'Гос номер',
+    dataIndex: 'licPlate',
+    slots: { customRender: 'licPlate' },
+  },
+  {
+    title: 'Время',
+    dataIndex: 'time',
+    slots: { customRender: 'time' },
+  },
+  {
+    title: 'Тип клиента',
+    dataIndex: 'client_type',
+    slots: { customRender: 'client_type' },
+  },
+];
 
 function onChange(pagination, filters, sorter) {
   //scroll to top
@@ -57,9 +89,24 @@ const getReport = async () => {
   }
 };
 
+// Получение данных для второй таблицы
+const getTimeReport = async () => {
+  try {
+    const response_time = await axios.get('http://localhost:5000/get-time-report');
+    timeReport.value = response_time.data.map(item => ({
+      licPlate: item.licPlate,
+      time: item.time,
+      client_type: item.client_type
+    }));
+  } catch (error) {
+    console.error('Error fetching second report:', error);
+  }
+};
+
 //Вызывается 1 раз при запуске
 onMounted(() => {
   getReport();
+  getTimeReport();
 });
 </script>
 

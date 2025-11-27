@@ -1,10 +1,5 @@
 <template>
   <div class="form-container">
-    <!-- Свитчер для выбора режима Фото или Видео/Камера -->
-    <!--<a-radio-group v-model:value="mode" button-style="solid" style="margin-bottom: 0px; width: 0%;">
-       <a-radio-button value="video">Видео</a-radio-button>
-    </a-radio-group>-->
-
     <!-- Форма для загрузки изображения и Function Name -->
     <a-form v-if="mode === 'photo'" :model="photoFormState" name="photoForm" layout="vertical">
       <a-form-item label="Загрузить изображение" name="imageFileList">
@@ -42,10 +37,7 @@
             <a-button type="primary" @click="stopVideoForm">Остановить запись</a-button>
         </div>
       </a-form-item>
-
-
     </a-form>
-
 
     <a-result
       v-else
@@ -61,12 +53,36 @@
         <a-button key="buy" @click="mode = 'video'">Вернуться</a-button>
       </template>
     </a-result>
+
+    <div v-if="!showVideo" style="
+        width: 100%;
+        height: 200px;
+        background-image: url('src/assets/99.png');
+        background-size: cover;
+        background-position: center;
+        border-radius: 20px;
+        border: 2px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #555;">
+    </div>
+
+    <img v-if="showVideo"
+        src="http://localhost:5000/video_feed/1"
+        alt="Ожидание начала записи..."
+        style="max-width: 100%;
+            max-height: 100%;
+            margin: 0% 0% 0% 0%;
+            border-radius: 20px;
+            background-color: #ffffff;
+            border: 2px solid white;">
   </div>
 </template>
 
 <script setup>
 import { PlusOutlined } from '@ant-design/icons-vue';
-import { reactive, ref } from 'vue';
+import { reactive, ref} from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { UndoOutlined } from '@ant-design/icons-vue';
@@ -78,6 +94,7 @@ const router = useRouter();
 const mode = ref('video');
 
 const image = ref(null);
+let intervalId = null;
 
 const imgPlaceholder =
     'iVBORw0KGgoAAAANSUhEUgAAARAAAAC5CAMAAADXsJC1AAAAS1BMVEX5+fmMjIyKior9/f34+PjAwMDe3t6Hh4e4uLiWlpby8vLr6+ujo6PU1NSPj4/v7++xsbGnp6fm5uba2tqrq6uamprHx8fPz8/Dw8PB1aGXAAAC2ElEQVR4nO3aW3OqMBSG4ZwgcjBoK9b//0t3FmCntlXDxW6nrPdxpiPWC/lmZSVAjAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAPC8av8Nu/9ie0VXXJr+ryXFWF3/61/19oo3PWFYm2VVAjrUvJ5kjsc861CkqktTYddoUU5CGBNMPKphr8hpORQDqzaq7ZdiNZAqlXGIxM11s1BeJNX9BUF/F10yUyV4jvbSpKI89JGgLxORDXFLEp1joCsfuSfhpOVksgbl9wnj4cNQUSns8dugKR43uZLGHpCmQ65/BtKMFoDCSvyad16NcT9teQlAXih6o/vHy9UvFvRmmF9C5f/L58OuHg69hd36sKxO9jSskebk84+G6M5+uBrkDOMeUlfH9zwrmdHqw9hvlDZYHUUiFu96lCzlbG0XKgKpDgd9G5cZCqWDprnnderaR01lgh+bA+7/NfP0goeaEefDuMeRQld1Q5y0wLEamP49jNC/lgTk76SlrGjK5ApkVqzsFX1o558s0f+IuVEZPsMmZ0BSLH0j72UhOj3Ck09VQdksg8ZjQGYrpmaqN95400kDmP1LzMg0lbINI14pRBTsQc4jWP5C7yf4WB+GoJIcV+F9M8YuSOaz9NO+oCycuOZZRIJ03vb5Nc4+gbMvm6pbm20c/sRV0geZZtT/H7OHIgo9wWURaIudyLQxLptAUi1y3iTh4yz2w+EP/+KFMqpEtRns7de2rXq+ghzjZ5TTpXSDs81KmYdt3ybHe6/H/4VQ0r1WCGD0NGnr48kCflzQeSI6jrOpjCJ3fbrxAz7R0yxhQ+29UQyKyXbR8lu6nUBGLtqWgjYrP1/SGL44P1x81aZPMbZhZ9LNvNLBuaZUvVdjfdTbx5q8rJ7eZNByLT7bp9qk9WcH/d9ztCHinZa/SnhVWJhHVfBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARf4B5RoxAeWTQE0AAAAASUVORK5CYII=';
@@ -110,6 +127,18 @@ const toBase64 = file => new Promise((resolve, reject) => {
     reader.onerror = reject;
 });
 
+const showVideo = ref(false);
+
+// Функция для переключения
+function showVideoFunc() {
+  showVideo.value = true;
+}
+
+// Функция для переключения
+function stopVideoFunc() {
+  showVideo.value = false;
+}
+
 function uploadAction(event) {
   let file = photoFormState.imageFileList.find((item) => item.uid === event.file.uid);
   file.status = 'done';
@@ -134,6 +163,7 @@ const getFrame = async () => {
     console.error('Error uploading video:', error);
   }
 };
+
 const submitVideoForm = async () => {
   console.log('Source:', videoFormState.rtspLink);
   console.log('Function Name:', videoFormState.functionName);
@@ -143,6 +173,7 @@ const submitVideoForm = async () => {
       function_name: videoFormState.functionName
     });
     mode.value = 'result';
+    showVideoFunc()
   } catch (error) {
     console.error('Error uploading video:', error);
   }
@@ -156,6 +187,7 @@ const stopVideoForm = async () => {
       function_name: videoFormState.functionName
     });
     mode.value = 'result';
+    stopVideoFunc()
   } catch (error) {
     console.error('Error uploading video:', error);
   }

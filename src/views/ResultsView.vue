@@ -38,7 +38,7 @@ const columns = computed(() => [
     slots: { customRender: 'date' },
   },
   {
-    title: 'Номер камеры',
+    title: 'Зона',
     dataIndex: 'source',
     slots: { customRender: 'source' },
   },
