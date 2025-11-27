@@ -1,0 +1,5 @@
+/.gitignore
+/runs/
+/data/
+/node_modules/
+/public/

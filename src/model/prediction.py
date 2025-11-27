@@ -8,9 +8,6 @@ def desciption(predictions):
 
 # Получение центра ограничивающей рамки
 def bb_center_xy(result):
-    yc = 0
-    xc = 0
-
     bb_tensor = result.boxes.xyxy
 
     x1 = round(bb_tensor.tolist()[0][0])

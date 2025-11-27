@@ -14,10 +14,12 @@ fontColor = (255, 255, 255)
 thickness = 2
 lineType = 2
 
+
 def print_line(frame):
     frame = cv2.line(frame, line_dot3, line_dot4, line_color, line_thickness)
     # return frame
     return cv2.line(frame, line_dot1, line_dot2, line_color, line_thickness)
+
 
 def get_bb_coords_by_result(result):
     margin = 66

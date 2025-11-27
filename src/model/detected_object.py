@@ -1,4 +1,4 @@
-class deteceted_object:
+class detected_object:
     def __init__(self, result_obj, track_id, conf, frame):
         self.result_obj = result_obj
         self.track_id = track_id

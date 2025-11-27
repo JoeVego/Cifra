@@ -1,8 +1,7 @@
 import threading
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
-import LPR_class
+import Lpr_class
 from src.sql import sql_queries
 import base64
 import redis
@@ -46,13 +45,13 @@ class GetTextByImage(BaseModel):
 
 @app.post("/start-detection")
 def start_detection(request: StartDetectionRequest):
-    # получение источника, по идее 0 вебки у нас нет - но пусть будет)
+    # получение источника, по идее 0 вебки у нас нет - но пусть будет
     source = request.source
     if source == "0":
         source = int(source)
 
     # создаем класс модели
-    detection = LPR_class.LPR_class(
+    detection = Lpr_class.Lpr_class(
         source=source,
         function_name=request.function_name,
         img_db_id=img_db_id
@@ -98,6 +97,7 @@ async def send_report_nn():
 
     return vue_results
 
+
 @app.get("/get-report")
 async def send_results_nn():
     select_res = sql_queries.get_report()
@@ -120,6 +120,7 @@ async def send_results_nn():
     ]
 
     return vue_results
+
 
 @app.get("/get-time-report")
 async def send_results_nn():
@@ -155,6 +156,7 @@ def generate(camera_id):
         if flag == 1:
             yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + current_frame + b'\r\n')
         time.sleep(0.15)
+
 
 @app.get("/video_feed/{camera_id}")
 def video_feed(camera_id: str):

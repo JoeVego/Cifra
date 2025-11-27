@@ -12,7 +12,8 @@ db_pool = psycopg2.pool.SimpleConnectionPool(
     port=5432
 )
 
-#выполнение запрос по полученному запросу и параметрам
+
+# выполнение запрос по полученному запросу и параметрам
 def execute_sql(sql_query, params):
     try:
         conn = db_pool.getconn()
@@ -28,7 +29,7 @@ def execute_sql(sql_query, params):
               "\n Запрос : ", sql_query, ", \n Параметры запроса : ", params)
 
 
-#сохранение кадров объектов
+# сохранение кадров объектов
 def insert_to_source(img_id, source_link, datetime_value, zone_value, image_bytes, lic_pl_text):
     # Экранирование строковых значений для предотвращения SQL-инъекций
     query = f"""
@@ -39,7 +40,8 @@ def insert_to_source(img_id, source_link, datetime_value, zone_value, image_byte
 
     return query, params
 
-#получение сохраненных объектов
+
+# получение сохраненных объектов
 def get_detection_results():
     results = []
     query = f"""
@@ -63,7 +65,8 @@ def get_detection_results():
 
     return results
 
-#получение записей о заявках
+
+# получение записей о заявках
 def get_report():
     results = []
     query = f"""
@@ -105,14 +108,15 @@ def get_report():
 #
 #     return query, params
 
-#получение информации о времени
+# получение информации о времени
 def get_time_report():
     results = []
-    #запрос не учитывает, что выезд случуился раньше заезд, но как будто и не должен такой кейс случится
+    # запрос не учитывает, что выезд случился раньше заезд, но как будто и не должен такой кейс случится
     query = f"""
         SELECT
             e1.lic_pl_text,
-            TO_CHAR(TO_TIMESTAMP(e2.date, 'YYYY-MM-DD HH24:MI:SS') - TO_TIMESTAMP(e1.date, 'YYYY-MM-DD HH24:MI:SS'), 'HH24:MI:SS') AS duration,
+            TO_CHAR(TO_TIMESTAMP(e2.date, 
+            'YYYY-MM-DD HH24:MI:SS') - TO_TIMESTAMP(e1.date, 'YYYY-MM-DD HH24:MI:SS'), 'HH24:MI:SS') AS duration,
             s.type
         FROM "source" e1
         JOIN "source" e2 
@@ -122,8 +126,8 @@ def get_time_report():
             AND TO_TIMESTAMP(e2.date, 'YYYY-MM-DD HH24:MI:SS') > TO_TIMESTAMP(e1.date, 'YYYY-MM-DD HH24:MI:SS')
         JOIN clients s ON s.lic_pl_text = e1.lic_pl_text;
         """
-    #s.client_type -- добавляем тип клиента
-    #JOIN service s ON s.lp_text = pt.lic_pl_text;
+    # s.client_type -- добавляем тип клиента
+    # JOIN service s ON s.lp_text = pt.lic_pl_text;
 
     try:
         conn = db_pool.getconn()

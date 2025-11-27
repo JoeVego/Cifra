@@ -56,7 +56,7 @@
 
     <div v-if="!showVideo" style="
         width: 100%;
-        height: 200px;
+        height: 20%;
         background-image: url('src/assets/99.png');
         background-size: cover;
         background-position: center;
@@ -96,35 +96,14 @@ const mode = ref('video');
 const image = ref(null);
 let intervalId = null;
 
-const imgPlaceholder =
-    'iVBORw0KGgoAAAANSUhEUgAAARAAAAC5CAMAAADXsJC1AAAAS1BMVEX5+fmMjIyKior9/f34+PjAwMDe3t6Hh4e4uLiWlpby8vLr6+ujo6PU1NSPj4/v7++xsbGnp6fm5uba2tqrq6uamprHx8fPz8/Dw8PB1aGXAAAC2ElEQVR4nO3aW3OqMBSG4ZwgcjBoK9b//0t3FmCntlXDxW6nrPdxpiPWC/lmZSVAjAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAPC8av8Nu/9ie0VXXJr+ryXFWF3/61/19oo3PWFYm2VVAjrUvJ5kjsc861CkqktTYddoUU5CGBNMPKphr8hpORQDqzaq7ZdiNZAqlXGIxM11s1BeJNX9BUF/F10yUyV4jvbSpKI89JGgLxORDXFLEp1joCsfuSfhpOVksgbl9wnj4cNQUSns8dugKR43uZLGHpCmQ65/BtKMFoDCSvyad16NcT9teQlAXih6o/vHy9UvFvRmmF9C5f/L58OuHg69hd36sKxO9jSskebk84+G6M5+uBrkDOMeUlfH9zwrmdHqw9hvlDZYHUUiFu96lCzlbG0XKgKpDgd9G5cZCqWDprnnderaR01lgh+bA+7/NfP0goeaEefDuMeRQld1Q5y0wLEamP49jNC/lgTk76SlrGjK5ApkVqzsFX1o558s0f+IuVEZPsMmZ0BSLH0j72UhOj3Ck09VQdksg8ZjQGYrpmaqN95400kDmP1LzMg0lbINI14pRBTsQc4jWP5C7yf4WB+GoJIcV+F9M8YuSOaz9NO+oCycuOZZRIJ03vb5Nc4+gbMvm6pbm20c/sRV0geZZtT/H7OHIgo9wWURaIudyLQxLptAUi1y3iTh4yz2w+EP/+KFMqpEtRns7de2rXq+ghzjZ5TTpXSDs81KmYdt3ybHe6/H/4VQ0r1WCGD0NGnr48kCflzQeSI6jrOpjCJ3fbrxAz7R0yxhQ+29UQyKyXbR8lu6nUBGLtqWgjYrP1/SGL44P1x81aZPMbZhZ9LNvNLBuaZUvVdjfdTbx5q8rJ7eZNByLT7bp9qk9WcH/d9ztCHinZa/SnhVWJhHVfBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARf4B5RoxAeWTQE0AAAAASUVORK5CYII=';
-
-const imageBase64 = ref(imgPlaceholder);
 const imageParams = ref({
   width: 600,
   height: 400,
 });
 
-// Состояния форм
-const photoFormState = reactive({
-  imageFileList: [],
-  functionName: ''
-});
-
 const videoFormState = reactive({
   source: '',
   functionName: ''
-});
-
-const regionColor = ref({ r: 255, g: 105, b: 0 });
-const regions = ref([]);
-const activeCoordinates = ref([]);
-
-const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
 });
 
 const showVideo = ref(false);
@@ -138,31 +117,6 @@ function showVideoFunc() {
 function stopVideoFunc() {
   showVideo.value = false;
 }
-
-function uploadAction(event) {
-  let file = photoFormState.imageFileList.find((item) => item.uid === event.file.uid);
-  file.status = 'done';
-}
-
-// Обработчики отправки форм
-const getFrame = async () => {
-  console.log('RTSP Link:', videoFormState.rtspLink);
-  console.log('Function Name:', videoFormState.functionName);
-  try {
-    const { imageInBase64, width, height } = await axios.post('http://localhost:5000/get-frame', {
-      source: videoFormState.source,
-    });
-    imageParams.value = {
-      width: width,
-      height: height,
-    };
-    imageBase64.value = imageInBase64;
-
-    mode.value = 'video2';
-  } catch (error) {
-    console.error('Error uploading video:', error);
-  }
-};
 
 const submitVideoForm = async () => {
   console.log('Source:', videoFormState.rtspLink);
@@ -205,30 +159,6 @@ function onClickImage(event) {
     },
   ];
   console.log(activeCoordinates.value);
-}
-function polygonCoordinates() {
-  let result = [];
-  activeCoordinates.value.map((item) => {
-    result.push(`${item.xn * 100}% ${item.yn * 100}%`);
-  });
-  return result.join(', ');
-}
-function deleteRegion(i) {
-  regions.value.splice(i, 1);
-}
-function undo() {
-  activeCoordinates.value = activeCoordinates.value.slice(0, -1);
-}
-function add() {
-  if (activeCoordinates.value.length < 4) {
-    return;
-  }
-  let result = {
-    coordinates: activeCoordinates.value,
-    color: regionColor.value,
-  };
-  regions.value.push(result);
-  activeCoordinates.value = [];
 }
 </script>
 
