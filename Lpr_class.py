@@ -122,6 +122,44 @@ class Lpr_class:
 
             return cv2.resize(annotated_frame, (1115, 627))
 
+            # отказался от кода по фильтрации объектов по уверенности с одним трек_айди
+            # настройка с conf и сравнение с предыдущим распознанным - решают эту проблему в данном кейсе
+            # код было жалко удалять)
+
+            # track_id = result.summary()[0].get('track_id')
+            # confidence = result.summary()[0].get('confidence')
+            #
+            # # Инициализация для этого track_id
+            # if track_id not in self.track_last_results:
+            #     self.track_last_results[track_id] = []
+            #
+            # # Проверяем есть ли уже результат с таким track_id и более высоким conf
+            # skip_new = False
+            # for past_result in self.track_last_results[track_id]:
+            #     if past_result.get_track_id() == track_id:
+            #         if past_result.get_conf() >= confidence:
+            #             skip_new = True
+            #             break
+            #
+            # if skip_new:
+            #     continue  # Пропускаем этот результат, т.к. есть более уверенный
+            #
+            # # Создаем объект для текущего результата
+            # current_obj = deteceted_object(result, track_id,
+            #                                confidence, annotated_frame)
+            #
+            # # Добавляем в историю
+            # self.track_last_results[track_id].append(current_obj)
+            # print("here !")
+            # result.save_crop("C:\\Users\\Admin\\Desktop\\Study\\Cifra\\data\\outs\\api_lp_6\\",
+            #                  "_" + str(track_id) + "_obj_" + str(self.img_save_counter)
+            #                  + "_conf_" + str(result.summary()[0].get('confidence')) + ".png")
+            # self.img_save_counter = self.img_save_counter + 1
+            #
+            # # Ограничиваем длину истории до 5 элементов
+            # if len(self.track_last_results[track_id]) > 10:
+            #     self.track_last_results[track_id].pop(0)
+
     def run(self):
         # если обнаружение не остановлено
         while self.detection_status is True:
